@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lassulfi.app.ws.ui.model.request.UpdateUserDetailsRequestModel;
 import com.lassulfi.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.lassulfi.app.ws.ui.model.response.UserRest;
 
@@ -73,9 +74,27 @@ public class UserController {
 		return new ResponseEntity<UserRest>(returnValue, HttpStatus.CREATED);
 	}
 	
-	@PutMapping
-	public String updateUser() {
-		return "PUT /users was called";
+	@PutMapping(path = "/{userId}", consumes = { 
+					MediaType.APPLICATION_XML_VALUE, 
+					MediaType.APPLICATION_JSON_VALUE 
+					}, 
+				produces = { 
+						MediaType.APPLICATION_XML_VALUE, 
+						MediaType.APPLICATION_JSON_VALUE 
+						})
+	public ResponseEntity<UserRest> updateUser(@PathVariable String userId, 
+			@Valid @RequestBody UpdateUserDetailsRequestModel userDetails) {
+		
+		if(!users.containsKey(userId)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		UserRest storedUserDetais = users.get(userId);
+		storedUserDetais.setFirstName(userDetails.getFirstName());
+		storedUserDetais.setLastName(userDetails.getLastName());
+		
+		users.put(userId, storedUserDetais);
+		
+		
+		return new ResponseEntity<>(storedUserDetais, HttpStatus.ACCEPTED);
 	}
 	
 	@DeleteMapping
