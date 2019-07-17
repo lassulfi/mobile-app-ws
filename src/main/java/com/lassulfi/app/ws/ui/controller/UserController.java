@@ -45,7 +45,7 @@ public class UserController {
 		if(users.containsKey(userId)) {
 			return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		
 		
@@ -92,13 +92,17 @@ public class UserController {
 		storedUserDetais.setLastName(userDetails.getLastName());
 		
 		users.put(userId, storedUserDetais);
-		
-		
+				
 		return new ResponseEntity<>(storedUserDetais, HttpStatus.ACCEPTED);
 	}
 	
-	@DeleteMapping
-	public String deleteUser() {
-		return "DELETE /users was called"; 
+	@DeleteMapping(path="/{userId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+		if(!users.containsKey(userId)) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		} else {
+			users.remove(userId);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
 	}
 }
